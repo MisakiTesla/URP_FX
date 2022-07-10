@@ -1,5 +1,21 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6577310873886682278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e01670d44f454f14d80e33d538199f6e, type: 3}
+  m_Name: Depth
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  setting:
+    passEvent: 400
+    material: {fileID: 2100000, guid: ce1a2d9a1fd063f41bebe495af327213, type: 2}
 --- !u!114 &-6312968700693771672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12,7 +28,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d6566eff7602c4e83ec7414a26d463, type: 3}
   m_Name: LensFlare
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   material: {fileID: 2100000, guid: 4f2f134dfd7ae494092128c89d6a4758, type: 2}
   mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &-1878332245247344467
@@ -55,8 +71,10 @@ MonoBehaviour:
       type: 3}
   m_RendererFeatures:
   - {fileID: -1878332245247344467}
+  - {fileID: -6577310873886682278}
   - {fileID: -6312968700693771672}
-  m_RendererFeatureMap: adc0de57c6d2eee5680afd0c6ad463a8
+  - {fileID: 135552834268709773}
+  m_RendererFeatureMap: adc0de57c6d2eee55a93abb89bb2b8a4680afd0c6ad463a88d43e2a69594e101
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -96,3 +114,21 @@ MonoBehaviour:
   m_ClusteredRendering: 0
   m_TileSize: 32
   m_IntermediateTextureMode: 1
+--- !u!114 &135552834268709773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a50188ae481554da57df139ca06d0f, type: 3}
+  m_Name: WorldPosGridFeature
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  material: {fileID: 2100000, guid: ce1a2d9a1fd063f41bebe495af327213, type: 2}
+  setting:
+    passEvent: 500
+    material: {fileID: 0}
