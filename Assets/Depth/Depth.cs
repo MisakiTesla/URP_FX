@@ -49,7 +49,7 @@ public class Depth : ScriptableRendererFeature
             // cmd.GetTemporaryRT(de, desc);
             // cmd.Blit(depthAttachment, de);
             
-            cmd.Blit(depthAttachment, colorAttachment, _material,0);
+            cmd.Blit(colorAttachment, colorAttachment, _material,0);
             
             context.ExecuteCommandBuffer(cmd);
 
