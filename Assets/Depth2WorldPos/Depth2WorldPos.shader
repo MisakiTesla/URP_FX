@@ -16,6 +16,7 @@ Shader "URP_FX/Depth2WorldPos"
 
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing//Common.hlsl"
 
         CBUFFER_START(UnityPerMaterial)
 
@@ -29,12 +30,10 @@ Shader "URP_FX/Depth2WorldPos"
         TEXTURE2D(_MainTex);
         SAMPLER(sampler_MainTex);
 
-        //TEXTURE2D(_CameraDepthTexture);//不需要这张图了
+        TEXTURE2D(_CameraDepthTexture);
 
-        //SAMPLER(sampler_CameraDepthTexture);//不需要这张图了
+        SAMPLER(sampler_CameraDepthTexture);
 
-        TEXTURE2D(_CameraDepthNormalsTexture);
-        SAMPLER(sampler_CameraDepthNormalsTexture);
         float4x4 Matrix;
 
         struct a2v
@@ -83,21 +82,37 @@ Shader "URP_FX/Depth2WorldPos"
 
             real4 FRAG(v2f i):SV_TARGET
             {
+                real depth = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, i.texcoord).r;
+                // return depth;
+                // 1.射线法
+                float linearEyeDepth = LinearEyeDepth(depth,_ZBufferParams);
+                // return LinearEyeDepth(depth,_ZBufferParams);
+                // return Linear01Depth(depth,_ZBufferParams);
 
-                real4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
+                float3 WSpos = _WorldSpaceCameraPos + linearEyeDepth * i.Dirction;
 
-                //return lerp(tex,_OutlineColor,outline);
+                // 2. ndc重建法
+                // //depth d3d为0-1，opengl为-1-1 则需depth*2-1
+                // #if UNITY_REVERSED_Z
+                // depth = 1.0 - depth;
+                // #endif
+                //
+                // depth = 2.0 * depth - 1.0;
+                //
+                // #if UNITY_UV_STARTS_AT_TOP
+                // i.texcoord.y = 1-i.texcoord.y;
+                // #endif
+                //
+                // float4 ndcPos = float4(i.texcoord.x*2 - 1, i.texcoord.y * 2 - 1, depth, 1);
+                //
+                // // float4 ndcPos = float4(i.texcoord.x, i.texcoord.y, depth, 1.0);
+                // float4 D= mul(UNITY_MATRIX_I_VP, ndcPos );
+                // // UNITY_MATRIX_I_VP 投影矩阵*相机空间矩阵 的逆矩阵
+                // WSpos = D/ D.w;
+                // return real4(i.texcoord.xy,0,1);
 
-                real4 depthnormal = SAMPLE_TEXTURE2D(_CameraDepthNormalsTexture, sampler_CameraDepthNormalsTexture,
-                                                     i.texcoord);
-                //因为这里使用了特殊的_CameraDepthNormalsTexture，所以获取01深度值的方式发生了变化
-                float depth01 = depthnormal.z * 1.0 + depthnormal.w / 255.0;
 
-                //return depth01;
-
-                float3 WSpos = _WorldSpaceCameraPos + depth01 * i.Dirction * _ProjectionParams.z; //这样也可以得到正确的世界坐标
-
-                return real4(frac(WSpos),1);
+                return real4(WSpos.xyz,1);
                 
             }
 

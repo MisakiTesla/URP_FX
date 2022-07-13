@@ -56,7 +56,7 @@ public class Depth2WorldPos : ScriptableRendererFeature
             
             int tempRT = Shader.PropertyToID("tempRT");
             RenderTextureDescriptor desc = renderingData.cameraData.cameraTargetDescriptor;
-
+            // Debug.Log();
             // 1 射线法
             // 相似三角形
             // 构建camera到 深度的射线向量，存储在矩阵里，用于重建世界坐标
