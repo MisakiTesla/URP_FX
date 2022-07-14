@@ -96,7 +96,7 @@ public class Depth2WorldPos : ScriptableRendererFeature
             
             
             cmd.GetTemporaryRT(tempRT, desc);
-            cmd.Blit(colorAttachment, tempRT, _material);
+            cmd.Blit(colorAttachment, tempRT, _material,0);
             cmd.Blit(tempRT, colorAttachment);
             context.ExecuteCommandBuffer(cmd);
 
