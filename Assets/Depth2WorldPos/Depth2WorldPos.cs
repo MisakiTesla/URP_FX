@@ -54,7 +54,7 @@ public class Depth2WorldPos : ScriptableRendererFeature
         {
             CommandBuffer cmd = CommandBufferPool.Get("Depth2WorldPos");
             
-            int tempRT = Shader.PropertyToID("tempRT");
+            int tempRT = Shader.PropertyToID("Depth2WorldPosTempRT");
             RenderTextureDescriptor desc = renderingData.cameraData.cameraTargetDescriptor;
             // Debug.Log();
             // 1 射线法
