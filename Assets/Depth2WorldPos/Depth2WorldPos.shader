@@ -10,13 +10,16 @@ Shader "URP_FX/Depth2WorldPos"
         Tags
         {
             "RenderPipeline"="UniversalRenderPipeline"
+            "Queue"="Transparent"
         }
+        
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Cull Off ZWrite Off ZTest Always
 
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-        #include "Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing//Common.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
         CBUFFER_START(UnityPerMaterial)
 
@@ -30,11 +33,9 @@ Shader "URP_FX/Depth2WorldPos"
         TEXTURE2D(_MainTex);
         SAMPLER(sampler_MainTex);
 
-        TEXTURE2D(_CameraDepthTexture);
-
-        SAMPLER(sampler_CameraDepthTexture);
 
         float4x4 Matrix;
+        float4x4 invVPMatrix;
 
         struct a2v
         {
@@ -82,37 +83,35 @@ Shader "URP_FX/Depth2WorldPos"
 
             real4 FRAG(v2f i):SV_TARGET
             {
-                real depth = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, i.texcoord).r;
+                real depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, i.texcoord);
                 // return depth;
+                
                 // 1.射线法
-                float linearEyeDepth = LinearEyeDepth(depth,_ZBufferParams);
-                // return LinearEyeDepth(depth,_ZBufferParams);
-                // return Linear01Depth(depth,_ZBufferParams);
-
-                float3 WSpos = _WorldSpaceCameraPos + linearEyeDepth * i.Dirction;
+                // float linearEyeDepth = LinearEyeDepth(depth,_ZBufferParams);
+                // float3 WSpos = _WorldSpaceCameraPos + linearEyeDepth * i.Dirction;
+                // return real4(WSpos.xyz,1);
 
                 // 2. ndc重建法
-                // //depth d3d为0-1，opengl为-1-1 则需depth*2-1
-                // #if UNITY_REVERSED_Z
-                // depth = 1.0 - depth;
-                // #endif
-                //
-                // depth = 2.0 * depth - 1.0;
-                //
-                // #if UNITY_UV_STARTS_AT_TOP
-                // i.texcoord.y = 1-i.texcoord.y;
-                // #endif
-                //
-                // float4 ndcPos = float4(i.texcoord.x*2 - 1, i.texcoord.y * 2 - 1, depth, 1);
-                //
-                // // float4 ndcPos = float4(i.texcoord.x, i.texcoord.y, depth, 1.0);
-                // float4 D= mul(UNITY_MATRIX_I_VP, ndcPos );
-                // // UNITY_MATRIX_I_VP 投影矩阵*相机空间矩阵 的逆矩阵
+
+                // not work
+                // float4 ndc = float4(i.texcoord.x*2 - 1, i.texcoord.y * 2 - 1, -(depth * 2 - 1), 1);
+                // float4 D= mul(UNITY_MATRIX_I_VP, ndc);
                 // WSpos = D/ D.w;
-                // return real4(i.texcoord.xy,0,1);
+                // return real4(WSpos.xyz,1);
 
 
-                return real4(WSpos.xyz,1);
+                
+                #if UNITY_REVERSED_Z
+                depth = 1.0 - depth;
+                #endif
+                
+                float4 ndcPos = float4(i.texcoord.x * 2 - 1, i.texcoord.y * 2 - 1, depth * 2 - 1, 1); //NDC坐标
+                float4 H = mul(unity_CameraInvProjection, ndcPos);
+                float4 V = float4((H.xyz/H.w) * float3(1,1,-1) , 1.0);
+                float4 W = mul(unity_CameraToWorld, V);
+                return float4(W.xyz,1);
+                
+                
                 
             }
 

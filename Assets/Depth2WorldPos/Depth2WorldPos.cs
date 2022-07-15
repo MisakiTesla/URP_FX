@@ -127,8 +127,10 @@ public class Depth2WorldPos : ScriptableRendererFeature
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
         // Debug.Log("AddRenderPasses");
-
-        renderer.EnqueuePass(_depth2WorldPass);
+        if (setting.material)
+        {
+            renderer.EnqueuePass(_depth2WorldPass);
+        }
     }
 }
 
