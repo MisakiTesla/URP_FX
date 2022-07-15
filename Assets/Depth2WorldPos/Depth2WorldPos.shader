@@ -86,21 +86,25 @@ Shader "URP_FX/Depth2WorldPos"
                 real depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, i.texcoord);
                 // return depth;
                 
-                // 1.射线法
+                // 1.射线法 性能最好
                 // float linearEyeDepth = LinearEyeDepth(depth,_ZBufferParams);
                 // float3 WSpos = _WorldSpaceCameraPos + linearEyeDepth * i.Dirction;
                 // return real4(WSpos.xyz,1);
 
-                // 2. ndc重建法
+                // 2. ndc重建法 1.手动
+                // float4 ndc = float4(i.texcoord.x*2 - 1, i.texcoord.y * 2 - 1, depth, 1);
+                // #if UNITY_UV_STARTS_AT_TOP
+                // ndc.y = -ndc.y;
+                // #endif
+                // float4 World= mul(UNITY_MATRIX_I_VP, ndc);
+                // World.xyz = World.xyz/ World.w;
+                // return real4(World.xyz,1);
 
-                // not work
-                // float4 ndc = float4(i.texcoord.x*2 - 1, i.texcoord.y * 2 - 1, -(depth * 2 - 1), 1);
-                // float4 D= mul(UNITY_MATRIX_I_VP, ndc);
-                // WSpos = D/ D.w;
-                // return real4(WSpos.xyz,1);
+                //             2.现成的轮子
+                float3 worldPos = ComputeWorldSpacePosition(i.texcoord, depth, UNITY_MATRIX_I_VP);
+                return float4(worldPos.xyz,1);
 
-
-                
+                // 3. ndc重建 ASE版
                 #if UNITY_REVERSED_Z
                 depth = 1.0 - depth;
                 #endif
@@ -110,12 +114,8 @@ Shader "URP_FX/Depth2WorldPos"
                 float4 V = float4((H.xyz/H.w) * float3(1,1,-1) , 1.0);
                 float4 W = mul(unity_CameraToWorld, V);
                 return float4(W.xyz,1);
-                
-                
-                
             }
-
-
+            
             ENDHLSL
 
         }
