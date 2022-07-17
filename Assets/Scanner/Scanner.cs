@@ -6,6 +6,7 @@ using UnityEngine.Rendering.Universal;
 public class Scanner : ScriptableRendererFeature
 {
     public Material material;//使用的材质
+    [ColorUsageAttribute(true, true)]
     public Color color;
     public Vector3 centerPos;
     public float radius;
@@ -125,7 +126,7 @@ public class Scanner : ScriptableRendererFeature
     // This method is called when setting up the renderer once per-camera.
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        Debug.Log("AddRenderPasses");
+        // Debug.Log("AddRenderPasses");
         if (material)
         {
             //设置参数

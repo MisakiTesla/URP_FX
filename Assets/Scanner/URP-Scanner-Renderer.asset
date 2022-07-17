@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f86acdb13bac42b4e8dcbe302ff7b84a, type: 3}
   m_Name: Scanner
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   material: {fileID: 2100000, guid: 23dc106c24549874d95b863723729396, type: 2}
-  color: {r: 0.45056072, g: 0.764151, b: 0.764151, a: 0}
+  color: {r: 0.9019608, g: 1.5294118, b: 1.5294118, a: 0}
   centerPos: {x: 0, y: 0, z: 0}
-  radius: 5
-  width: 0.3
-  bias: 0.1
+  radius: 0
+  width: 0.22
+  bias: 0.5
   passEvent: 500
 --- !u!114 &-1878332245247344467
 MonoBehaviour:
@@ -32,7 +32,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
   m_Name: SSAO
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   m_Shader: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
   m_Settings:
     Downsample: 0

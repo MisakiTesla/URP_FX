@@ -4,11 +4,12 @@ Shader "URP_FX/Scanner"
     {
         //[KeywordEnum(X,Y,Z)]_AXIS("Axis",float)=1
         _MainTex("MainTex",2D)= "white"{}
-        _Color("Color",color)=(0,0,0,0)
+        [HDR]_Color("Color",color)=(0,0,0,0)
         _CenterPos("CenterPos",vector)=(0,0,0,0)
         _Radius("Radius",float)=0
         _Width("Width",float)=0
         _Bias("Bias",float)=0
+        [Toggle(GRID_LINE)]_GridLine("GridLine",int)=1
     }
 
     SubShader
@@ -26,7 +27,7 @@ Shader "URP_FX/Scanner"
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
-
+        
         CBUFFER_START(UnityPerMaterial)
 
         float4 _MainTex_ST;
@@ -68,6 +69,7 @@ Shader "URP_FX/Scanner"
             #pragma vertex VERT
             #pragma fragment FRAG
             #pragma multi_compile_local _AXIS_X _AXIS_Y _AXIS_Z
+            #pragma multi_compile_local GRID_LINE
 
             v2f VERT(a2v i)
             {
@@ -131,7 +133,15 @@ Shader "URP_FX/Scanner"
                 // return sceneColor + lengthToCenter<3;
                 float scannerNearLine = smoothstep(_Radius - _Width - _Bias, _Radius - _Width, lengthToCenter);
                 float scannerFarLine = smoothstep(_Radius + _Width - _Bias, _Radius + _Width, lengthToCenter);
+
+                #if GRID_LINE
+                float2 xzGrid = frac(worldPos.xz);
+                float gridLine = (xzGrid.x < 0.03) | (xzGrid.y <0.03);
+                return sceneColor + (scannerNearLine - scannerFarLine)*(1+gridLine)*_Color;
+
+                #else
                 return sceneColor + (scannerNearLine - scannerFarLine)*_Color;
+                #endif
             }
             
             ENDHLSL
